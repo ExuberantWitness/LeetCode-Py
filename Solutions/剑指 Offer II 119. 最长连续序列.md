@@ -29,18 +29,35 @@
 ```python
 class Solution:
     def longestConsecutive(self, nums: List[int]) -> int:
-        ans = 0
-        nums_set = set(nums)
-        for num in nums_set:
-            if num - 1 not in nums_set:
-                curr_num = num
-                curr_streak = 1
+        longest_streak = 0
+        num_set = set(nums)  # 这里使用set这种专门的操作
 
-                while curr_num + 1 in nums_set:
-                    curr_num += 1
-                    curr_streak += 1
-                ans = max(ans, curr_streak)
+        # 记录最长连续序列的长度
+        for num in num_set:
+            if num - 1 not in num_set:
+                # 如果当前数字是序列的起始点（num-1 不在集合中），就开始找连续序列
+                current_num = num
+                current_streak = 1
 
-        return ans
+
+                # 继续向后找连续的数字
+                while current_num + 1 in num_set:
+                    current_num += 1
+                    current_streak += 1
+
+                # 更新最长连续序列的长度
+                longest_streak = max(longest_streak, current_streak)
+
+        return longest_streak
+
+
+"""
+这个题的主要idea在于
+1，利用了set的特性：唯一性，查找速度快
+    -使用了in来快速基于哈希进行查找
+    -上来就把list转化成set
+2，用直接查找值的-1来作为起点
+3，利用了max
+"""
 ```
 
