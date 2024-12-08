@@ -24,35 +24,48 @@
 ## 代码
 
 ```python
-class UnionFind:
-
-    def __init__(self, n):
-        self.parent = [i for i in range(n)]
-
-    def find(self, x):
-        while x != self.parent[x]:
-            self.parent[x] = self.parent[self.parent[x]]
-            x = self.parent[x]
-        return x
-
-    def union(self, x, y):
-        root_x = self.find(x)
-        root_y = self.find(y)
-        self.parent[root_x] = root_y
-
-    def is_connected(self, x, y):
-        return self.find(x) == self.find(y)
-
 class Solution:
     def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
-        size = len(edges)
-        union_find = UnionFind(size + 1)
 
-        for edge in edges:
-            if union_find.is_connected(edge[0], edge[1]):
-                return edge
-            union_find.union(edge[0], edge[1])
 
-        return None
+        
+        n = len(edges)  # n 是边的数量，实际上也是节点数量的上限
+
+
+        # 初始化并查集，parent[i] 表示节点 i 的父节点，初始时每个节点的父节点都是自己
+        # 这里就是直接基于n生成一个列表
+        parent = list(range(n + 1))  # 从 1 到 n 的节点，所以大小为 n+1
+
+
+        # 查找操作，找到节点所在集合的根节点
+        def find(index: int) -> int:
+            if parent[index] != index:
+                # 路径压缩，递归查找父节点并将其直接指向根节点
+                parent[index] = find(parent[index])
+            return parent[index]
+        
+        # 合并操作，将两个节点所在集合合并
+        def union(index1: int, index2: int):
+            parent[find(index1)] = find(index2)
+
+        # 遍历所有的边
+        for node1, node2 in edges:
+            # 如果 node1 和 node2 已经在同一个连通分量中，则添加的边形成了环，返回这条边
+            if find(node1) != find(node2):
+                # 如果不在同一个集合，进行合并
+                union(node1, node2)
+            else:
+                # 如果已经在同一集合，说明形成了环，返回当前这条边
+                return [node1, node2]
+        
+        return []
+
+"""
+这个图本质是找环
+
+1，先生成一个直接的节点
+
+
+"""
 ```
 
