@@ -40,4 +40,33 @@ class Solution:
                     ans = max(ans, self.dfs(grid, i, j))
         return ans
 ```
-相当于是随机出现的多个树的叠加过程
+相当于是随机出现的多个树的叠加过程，下面进一步介绍dfs
+
+```python
+def dfs(graph,node,visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(node) # 管理是否已经经历过了
+    print(node) # 对节点过程进行操作
+    for neighbor in graph[node]:  # 保证回溯能力
+        if neighbor not in visited: 
+            dfs(graph,neighbor,visited) # 保证继续挖的能力
+
+
+# 示例图
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B'],
+    'F': ['C']
+}
+
+dfs(graph, 'A')
+```
+
+
+
+
+
