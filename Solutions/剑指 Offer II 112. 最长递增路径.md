@@ -21,29 +21,44 @@
 
 ```python
 class Solution:
-    max_len = 0
-    directions = {(1, 0), (-1, 0), (0, 1), (0, -1)}
+    
+    DIRS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
     def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
+
+
+        # 如果矩阵为空，返回 0
         if not matrix:
             return 0
-        rows, cols = len(matrix), len(matrix[0])
-        record = [[0 for _ in range(cols)] for _ in range(rows)]
+        
+        # 定义一个递归函数来进行深度优先搜索（DFS），并使用 lru_cache 来缓存结果
+        @lru_cache(None)  # 使用缓存来优化递归，避免重复计算相同的子问题
+        def dfs(row: int, column: int) -> int:
+             # 当前路径的最小长度为 1（当前节点本身）
+            best = 1
+            # 遍历四个方向：上、下、左、右
+            for dx, dy in Solution.DIRS:
+                # 计算新位置的行列坐标
+                newRow, newColumn = row + dx, column + dy
+                # 检查新位置是否在矩阵范围内，并且新位置的值大于当前节点的值
+                if 0 <= newRow < rows and 0 <= newColumn < columns and matrix[newRow][newColumn] > matrix[row][column]:
+                    # 如果条件满足，递归地计算从新位置开始的最长递增路径，并更新 best
+                    best = max(best, dfs(newRow, newColumn) + 1)
+            
+            # 返回当前节点的最长递增路径长度
+            return best
 
-        def dfs(i, j):
-            record[i][j] = 1
-            for direction in self.directions:
-                new_i, new_j = i + direction[0], j + direction[1]
-                if 0 <= new_i < rows and 0 <= new_j < cols and matrix[new_i][new_j] > matrix[i][j]:
-                    if record[new_i][new_j] == 0:
-                        dfs(new_i, new_j)
-                    record[i][j] = max(record[i][j], record[new_i][new_j] + 1)
-            self.max_len = max(self.max_len, record[i][j])
+        # 初始化答案为 0
+        ans = 0
+         # 获取矩阵的行数和列数
+        rows, columns = len(matrix), len(matrix[0])
 
+        # 遍历矩阵的每个节点，计算每个节点作为起点的最长递增路径
         for i in range(rows):
-            for j in range(cols):
-                if record[i][j] == 0:
-                    dfs(i, j)
-        return self.max_len
+            for j in range(columns):
+                # 更新答案，取当前节点的最长递增路径和已找到的最长路径的最大值
+                ans = max(ans, dfs(i, j))
+        return ans
+
 ```
 
